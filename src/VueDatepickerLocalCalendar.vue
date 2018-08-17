@@ -36,18 +36,18 @@
       <div :class="`${pre}-title`">{{local.minuteTip}}</div>
       <a v-for="(j,i) in 60" @click="is($event)&&(showMinutes=false,minute=i,ok('h'))" :class="[status(year,month,day,hour,i,second,'YYYYMMDDHHmm')]" :key="i">{{i}}</a>
     </div>
-    <div :class="`${pre}-seconds`" v-show="showSeconds">
+    <div :class="`${pre}-seconds`" v-show="showSeconds && m === 'Hs'">
       <div :class="`${pre}-title`">{{local.secondTip}}</div>
       <a v-for="(j,i) in 60" @click="is($event)&&(showSeconds=false,second=i,ok('h'))" :class="[status(year,month,day,hour,minute,i,'YYYYMMDDHHmmss')]" :key="i">{{i}}</a>
     </div>
   </div>
-  <div :class="`${pre}-foot`" v-if="m==='H'">
+  <div :class="`${pre}-foot`" v-if="shouldShowFooterTime">
     <div :class="`${pre}-hour`">
       <a :title="local.hourTip" @click="showHours=!showHours,showMinutes=showSeconds=false" :class="{on:showHours}">{{hour|dd}}</a>
       <span>:</span>
       <a :title="local.minuteTip" @click="showMinutes=!showMinutes,showHours=showSeconds=false" :class="{on:showMinutes}">{{minute|dd}}</a>
-      <span>:</span>
-      <a :title="local.secondTip" @click="showSeconds=!showSeconds,showHours=showMinutes=false" :class="{on:showSeconds}">{{second|dd}}</a>
+      <span v-show="m === 'Hs'">:</span>
+      <a v-show="m === 'Hs'" :title="local.secondTip" @click="showSeconds=!showSeconds,showHours=showMinutes=false" :class="{on:showSeconds}">{{second|dd}}</a>
     </div>
   </div>
 </div>
@@ -157,6 +157,13 @@ export default {
         })
       }
       return days
+    },
+    shouldShowFooterTime() {
+      if(this.m === 'H' || this.m === 'Hs') {
+        return true;
+      }
+
+      return false;
     }
   },
   filters: {
@@ -168,8 +175,8 @@ export default {
         year: time.getFullYear(),
         month: time.getMonth(),
         day: time.getDate(),
-        hour: time.getHours(),
-        minute: time.getMinutes(),
+        hour: 23,
+        minute: 59,
         second: time.getSeconds()
       }
     },
@@ -238,8 +245,12 @@ export default {
   mounted () {
     const $this = this
     const is = c => $this.format.indexOf(c) !== -1
-    if (is('s') && is('m') && (is('h') || is('H'))) {
+    // const ll = this.format;
+    // debugger;
+    if(is('m') && (is('h') || is('H'))) {
       $this.m = 'H'
+    } else if (is('s') && is('m') && (is('h') || is('H'))) {
+      $this.m = 'Hs'
     } else if (is('D')) {
       $this.m = 'D'
     } else if (is('M')) {

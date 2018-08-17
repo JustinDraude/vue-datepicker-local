@@ -80,7 +80,7 @@ export default {
   data () {
     return {
       show: false,
-      dates: this.vi(this.value)
+      dates: this.vi(this.value),
     }
   },
   computed: {
@@ -126,6 +126,7 @@ export default {
     },
     tf (time, format) {
       const year = time.getFullYear()
+      const doubleDigitsYear = parseInt(time.getFullYear().toString().substr(2,2), 10)
       const month = time.getMonth()
       const day = time.getDate()
       const hours24 = time.getHours()
@@ -135,6 +136,7 @@ export default {
       const milliseconds = time.getMilliseconds()
       const dd = t => ('0' + t).slice(-2)
       const map = {
+        YY: doubleDigitsYear,
         YYYY: year,
         MM: dd(month + 1),
         MMM: this.local.months[month],
