@@ -59,7 +59,16 @@ export default {
   props: {
     value: null,
     left: false,
-    right: false
+    right: false,
+    initOnce: Boolean,
+    defaultSetHour: {
+      type: Number,
+      default: 23
+    },
+    defaultSetMinutes: {
+      type: Number,
+      default: 59
+    }
   },
   data () {
     const time = this.get(this.value)
@@ -79,10 +88,28 @@ export default {
       second: time.second
     }
   },
+  created() {
+    if(!this.initOnce) {
+      const now = new Date();
+      const nowH = now.getHours();
+      const nowM = now.getMinutes();
+
+      if(this.hour === nowH) {
+        this.hour = this.defaultSetHour;
+      }
+
+      if(this.minute === nowM) {
+        this.minute = this.defaultSetMinutes;
+      }
+
+      this.$emit('initialised');
+    }
+  },
   watch: {
     value (val) {
       const $this = this
       const time = $this.get(val)
+      console.log(time);
       $this.year = time.year
       $this.month = time.month
       $this.day = time.day
@@ -175,8 +202,8 @@ export default {
         year: time.getFullYear(),
         month: time.getMonth(),
         day: time.getDate(),
-        hour: 23,
-        minute: 59,
+        hour: time.getHours(),
+        minute: time.getMinutes(),
         second: time.getSeconds()
       }
     },
@@ -234,6 +261,7 @@ export default {
         year = time.year
         month = time.month
       }
+
       const _time = new Date(year || $this.year, month || $this.month, $this.day, $this.hour, $this.minute, $this.second)
       if ($this.left && parseInt(_time.getTime() / 1000) > $this.end) {
         this.$parent.dates[1] = _time

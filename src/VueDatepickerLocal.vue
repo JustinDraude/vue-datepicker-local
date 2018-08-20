@@ -5,11 +5,31 @@
   <transition name="datepicker-anim">
     <div class="datepicker-popup" :class="[popupClass,{'datepicker-inline':type==='inline'}]" tabindex="-1" v-if="show||type==='inline'">
       <template v-if="range">
-        <vue-datepicker-local-calendar v-model="dates[0]" :left="true"></vue-datepicker-local-calendar>
-        <vue-datepicker-local-calendar v-model="dates[1]" :right="true"></vue-datepicker-local-calendar>
+        <vue-datepicker-local-calendar
+        v-model="dates[0]"
+        :left="true"
+        :init-once="initOnce"
+        :default-set-hour="defaultSetHour"
+        :default-set-minutes="defaultSetMinutes"
+         @initialised="initOnce = true">
+         </vue-datepicker-local-calendar>
+        <vue-datepicker-local-calendar
+        v-model="dates[1]"
+        :right="true"
+        :init-once="initOnce"
+        :default-set-hour="defaultSetHour"
+        :default-set-minutes="defaultSetMinutes"
+        @initialised="initOnce = true">
+        </vue-datepicker-local-calendar>
       </template>
       <template v-else>
-        <vue-datepicker-local-calendar v-model="dates[0]"></vue-datepicker-local-calendar>
+        <vue-datepicker-local-calendar
+        v-model="dates[0]"
+        :init-once="initOnce"
+        :default-set-hour="defaultSetHour"
+        :default-set-minutes="defaultSetMinutes"
+        @initialised="initOnce = true">
+        </vue-datepicker-local-calendar>
       </template>
       <div v-if="showButtons" class="datepicker__buttons">
         <button @click.prevent.stop="cancel" class="datepicker__button-cancel">{{this.local.cancelTip}}</button>
@@ -75,12 +95,21 @@ export default {
       type: Boolean,
       default: false
     },
-    dateRangeSelect: [Function]
+    dateRangeSelect: [Function],
+    defaultSetHour: {
+      type: Number,
+      default: 23
+    },
+    defaultSetMinutes: {
+      type: Number,
+      default: 59
+    },
   },
   data () {
     return {
       show: false,
       dates: this.vi(this.value),
+      initOnce: false
     }
   },
   computed: {
@@ -169,6 +198,10 @@ export default {
     }
   },
   mounted () {
+    if(this.value !== null) {
+      this.initOnce = true;
+    }
+
     document.addEventListener('click', this.dc, true)
   },
   beforeDestroy () {
