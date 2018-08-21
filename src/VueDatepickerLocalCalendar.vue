@@ -109,7 +109,6 @@ export default {
     value (val) {
       const $this = this
       const time = $this.get(val)
-      console.log(time);
       $this.year = time.year
       $this.month = time.month
       $this.day = time.day

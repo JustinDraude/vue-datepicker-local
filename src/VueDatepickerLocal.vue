@@ -70,6 +70,10 @@ export default {
         return false
       }
     },
+    displayValue: {
+      type: Function,
+      default: null
+    },
     format: {
       type: String,
       default: 'YYYY-MM-DD'
@@ -117,6 +121,10 @@ export default {
       return this.dates.length === 2
     },
     text () {
+      if(this.displayValue !== null) {
+        return this.displayValue(this.value, this.dates, this.rangeSeparator);
+      }
+
       const val = this.value
       const txt = this.dates.map(date => this.tf(date)).join(` ${this.rangeSeparator} `)
       if (Array.isArray(val)) {
