@@ -60,7 +60,6 @@ export default {
     value: null,
     left: false,
     right: false,
-    initOnce: Boolean,
     defaultSetHour: {
       type: Number,
       default: 23
@@ -89,21 +88,6 @@ export default {
     }
   },
   created() {
-    if(!this.initOnce) {
-      const now = new Date();
-      const nowH = now.getHours();
-      const nowM = now.getMinutes();
-
-      if(this.hour === nowH) {
-        this.hour = this.defaultSetHour;
-      }
-
-      if(this.minute === nowM) {
-        this.minute = this.defaultSetMinutes;
-      }
-
-      this.$emit('initialised');
-    }
   },
   watch: {
     value (val) {
@@ -197,6 +181,7 @@ export default {
   },
   methods: {
     get (time) {
+      console.log(time);
       return {
         year: time.getFullYear(),
         month: time.getMonth(),

@@ -8,27 +8,21 @@
         <vue-datepicker-local-calendar
         v-model="dates[0]"
         :left="true"
-        :init-once="initOnce"
         :default-set-hour="defaultSetHour"
-        :default-set-minutes="defaultSetMinutes"
-         @initialised="initOnce = true">
+        :default-set-minutes="defaultSetMinutes">
          </vue-datepicker-local-calendar>
         <vue-datepicker-local-calendar
         v-model="dates[1]"
         :right="true"
-        :init-once="initOnce"
         :default-set-hour="defaultSetHour"
-        :default-set-minutes="defaultSetMinutes"
-        @initialised="initOnce = true">
+        :default-set-minutes="defaultSetMinutes">
         </vue-datepicker-local-calendar>
       </template>
       <template v-else>
         <vue-datepicker-local-calendar
         v-model="dates[0]"
-        :init-once="initOnce"
         :default-set-hour="defaultSetHour"
-        :default-set-minutes="defaultSetMinutes"
-        @initialised="initOnce = true">
+        :default-set-minutes="defaultSetMinutes">
         </vue-datepicker-local-calendar>
       </template>
       <div v-if="showButtons" class="datepicker__buttons">
@@ -100,6 +94,10 @@ export default {
       default: false
     },
     dateRangeSelect: [Function],
+    setDefaultTime: {
+      Boolean,
+      default: false
+    },
     defaultSetHour: {
       type: Number,
       default: 23
@@ -113,7 +111,6 @@ export default {
     return {
       show: false,
       dates: this.vi(this.value),
-      initOnce: false
     }
   },
   computed: {
@@ -144,15 +141,31 @@ export default {
       return Array.isArray(this.value) ? this.dates : this.dates[0]
     },
     cls () {
-      this.$emit('clear')
-      this.$emit('input', this.range ? [] : '')
+      this.$emit('clear');
+      this.$emit('input', this.range ? [] : '');
     },
     vi (val) {
-      if (Array.isArray(val)) {
-        return val.length > 1 ? val.map(item => new Date(item)) : [new Date(), new Date()]
+
+      if(this.setDefaultTime) {
+        const newDate = new Date();
+        newDate.setHours(this.defaultSetHour);
+        newDate.setMinutes(this.defaultSetMinutes);
+
+        if (Array.isArray(val)) {
+          return val.length > 1 ? val.map(item => new Date(item)) : [newDate, newDate]
+        } else {
+          return val ? new Array(new Date(val)) : [newDate]
+        }
+
       } else {
-        return val ? new Array(new Date(val)) : [new Date()]
+        if (Array.isArray(val)) {
+          return val.length > 1 ? val.map(item => new Date(item)) : [new Date(), new Date()]
+        } else {
+          return val ? new Array(new Date(val)) : [new Date()]
+        }
+
       }
+
     },
     ok (leaveOpened) {
       const $this = this
@@ -206,10 +219,6 @@ export default {
     }
   },
   mounted () {
-    if(this.value !== null) {
-      this.initOnce = true;
-    }
-
     document.addEventListener('click', this.dc, true)
   },
   beforeDestroy () {
