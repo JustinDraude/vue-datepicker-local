@@ -181,7 +181,6 @@ export default {
   },
   methods: {
     get (time) {
-      console.log(time);
       return {
         year: time.getFullYear(),
         month: time.getMonth(),
