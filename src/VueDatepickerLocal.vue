@@ -106,6 +106,10 @@ export default {
       type: Number,
       default: 59
     },
+    clearOnCancel: {
+      type: Boolean,
+      default: true
+    }
   },
   data () {
     return {
@@ -214,6 +218,9 @@ export default {
       this.show = false
     },
     cancel () {
+      if(this.clearOnCancel) {
+        this.cls();
+      }
       this.$emit('cancel')
       this.show = false
     }
